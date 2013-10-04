@@ -1,0 +1,28 @@
+{
+  "name": "bioplot",
+  "version": "0.0.1",
+  "homepage": "https://github.com/erbriones/bioplot",
+  "authors": [
+    "Evan Briones <erbriones@gmail.com>"
+  ],
+  "description": "Bioinformatic plots",
+  "keywords": [
+    "bioinformatic",
+    "visualization"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "~3.3.6"
+  },
+  "devDependencies": {
+    "qunit": "~1.12.0"
+  }
+}
