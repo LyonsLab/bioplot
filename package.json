@@ -1,0 +1,42 @@
+{
+  "name": "bioplot",
+  "description": "Bioinformatic plots",
+  "author": "Evan Briones",
+  "version": "0.0.1",
+  "license": "MIT",
+  "keywords": [
+    "bioinformatic",
+    "visualization"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/erbriones/bioplot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/erbriones/bioplot/issues"
+  },
+  "scripts": {
+    "test": "grunt"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-jasmine-runner": "~0.6.0",
+    "grunt-express": "~1.2.1",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-open": "~0.2.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.5",
+    "grunt-contrib-jshint": "~0.7.1",
+    "grunt-jsonlint": "~1.0.2",
+    "karma-script-launcher": "~0.1.0",
+    "karma-chrome-launcher": "~0.1.0",
+    "karma-firefox-launcher": "~0.1.0",
+    "karma-html2js-preprocessor": "~0.1.0",
+    "karma-jasmine": "~0.1.3",
+    "karma-requirejs": "~0.1.0",
+    "karma-coffee-preprocessor": "~0.1.0",
+    "karma-phantomjs-launcher": "~0.1.0",
+    "karma": "~0.10.4",
+    "grunt-karma": "~0.6.2"
+  }
+}
