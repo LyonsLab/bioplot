@@ -34,12 +34,12 @@ function dotplot(element, config) {
     };
 
     this.render = function () {
-        var width = self.config.size.width + self.config.padding.left + self.config.padding.right,
-            height = self.config.size.height + self.config.padding.top + self.config.padding.bottom;
+        var vwidth = self.config.size.width + self.config.padding.left + self.config.padding.right,
+            vheight = self.config.size.height + self.config.padding.top + self.config.padding.bottom;
 
         self.viewport = self.element.append("svg")
-            .attr("width",  width)
-            .attr("height", height)
+            .attr("width",  vwidth)
+            .attr("height", vheight)
             .append("g")
             .attr("transform", translate(self.config.padding.left,
                     self.config.padding.top));
