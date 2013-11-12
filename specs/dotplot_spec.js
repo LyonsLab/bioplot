@@ -23,6 +23,9 @@ describe("dotplot", function() {
         expect(plot.config.title).toBeUndefined();
         expect(plot.config.xlabel).toBeUndefined();
         expect(plot.config.ylabel).toBeUndefined();
+
+        expect(plot.config.extent.horizontal).toEqual([0, 700]);
+        expect(plot.config.extent.vertical).toEqual([0, 700]);
     });
 
     it("should override default configuration", function() {
@@ -36,6 +39,10 @@ describe("dotplot", function() {
                 bottom: 10,
                 left: 10,
                 right: 10
+            },
+            extent: {
+                horizontal: [10, 1000],
+                vertical: [20, 2000],
             },
             title: 'title',
             xlabel: 'xlabel',
@@ -53,5 +60,8 @@ describe("dotplot", function() {
         expect(plot.config.title).toBe('title');
         expect(plot.config.xlabel).toBe('xlabel');
         expect(plot.config.ylabel).toBe('ylabel');
+
+        expect(plot.config.extent.horizontal).toEqual([10, 1000]);
+        expect(plot.config.extent.vertical).toEqual([20, 2000])
     })
 });
