@@ -76,4 +76,21 @@ describe("dotplot", function() {
 
         expect(true).toBe(true);
     });
+
+    it("should render a title", function() {
+        plot.configure({
+            title: 'title'
+        });
+
+        plot.render();
+
+        var title = d3.select("text");
+        expect(title.text()).toBe("title");
+        expect(title.attr("x")).toBe("350");
+
+        // not necessary required
+        expect(title.attr("class")).toBe("axis");
+        expect(title.style("text-anchor")).toBe("middle");
+        expect(title.attr("dy")).toBe("-1em");
+    })
 });
