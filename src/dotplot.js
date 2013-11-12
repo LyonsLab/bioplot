@@ -33,5 +33,17 @@ function dotplot(element, config) {
             .range([this.config.size.height, 0]);
     };
 
+    this.render = function () {
+        var width = self.config.size.width + self.config.padding.left + self.config.padding.right,
+            height = self.config.size.height + self.config.padding.top + self.config.padding.bottom;
+
+        self.viewport = self.element.append("svg")
+            .attr("width",  width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", translate(self.config.padding.left,
+                    self.config.padding.top));
+    };
+
     this.configure(config);
 }

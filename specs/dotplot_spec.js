@@ -64,4 +64,16 @@ describe("dotplot", function() {
         expect(plot.config.extent.horizontal).toEqual([10, 1000]);
         expect(plot.config.extent.vertical).toEqual([20, 2000])
     })
+
+    it("should render an empty dotplot", function() {
+        plot.render();
+
+        var canvas = element.select("canvas"),
+            svg = d3.select("svg");
+
+        expect(svg.attr("width")).toBe('760');
+        expect(svg.attr("height")).toBe('740');
+
+        expect(true).toBe(true);
+    });
 });
