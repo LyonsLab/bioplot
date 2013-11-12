@@ -93,4 +93,9 @@ describe("dotplot", function() {
         expect(title.style("text-anchor")).toBe("middle");
         expect(title.attr("dy")).toBe("-1em");
     })
+
+    it("should be styled", function() {
+        expect(element.attr("class")).toBe("ui-bioplot-dotplot")
+    })
+
 });

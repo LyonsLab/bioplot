@@ -54,5 +54,6 @@ function dotplot(element, config) {
         }
     };
 
+    element.attr("class", "ui-bioplot-dotplot");
     this.configure(config);
 }
