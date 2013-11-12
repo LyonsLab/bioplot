@@ -25,4 +25,33 @@ describe("Bioplot : dotplot", function() {
         expect(plot.config.ylabel).toBeUndefined();
     });
 
+    it("should override default configuration", function() {
+        plot.configure({
+            size: {
+                width: 800,
+                height: 500
+            },
+            padding: {
+                top: 10,
+                bottom: 10,
+                left: 10,
+                right: 10
+            },
+            title: 'title',
+            xlabel: 'xlabel',
+            ylabel: 'ylabel'
+        });
+
+        expect(plot.config.size.width).toBe(800);
+        expect(plot.config.size.height).toBe(500);
+
+        expect(plot.config.padding.top).toBe(10);
+        expect(plot.config.padding.bottom).toBe(10);
+        expect(plot.config.padding.left).toBe(10);
+        expect(plot.config.padding.right).toBe(10);
+
+        expect(plot.config.title).toBe('title');
+        expect(plot.config.xlabel).toBe('xlabel');
+        expect(plot.config.ylabel).toBe('ylabel');
+    })
 });
