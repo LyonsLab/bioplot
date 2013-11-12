@@ -43,6 +43,15 @@ function dotplot(element, config) {
             .append("g")
             .attr("transform", translate(self.config.padding.left,
                     self.config.padding.top));
+
+        if (self.config.title) {
+            self.viewport.append("text")
+                .attr("class", "axis")
+                .text(self.config.title)
+                .attr("x", self.config.size.width / 2)
+                .attr("dy", "-1em")
+                .style("text-anchor", "middle");
+        }
     };
 
     this.configure(config);
