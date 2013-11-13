@@ -52,6 +52,24 @@ function dotplot(element, config) {
                 .attr("dy", "-1em")
                 .style("text-anchor", "middle");
         }
+
+        if (self.config.xlabel) {
+            self.viewport.append("text")
+                .attr("class", "axis x")
+                .text(self.config.xlabel)
+                .attr("x", self.config.size.width / 2)
+                .attr("y", self.config.size.height)
+                .attr("dy", "2.5em")
+                .style("text-anchor", "middle");
+        }
+
+        if (self.config.ylabel) {
+            self.viewport.append("text")
+                .attr("class", "axis y")
+                .text(self.config.ylabel)
+                .style("text-anchor", "middle")
+                .attr("transform", transform(-10, self.config.size.height/2, 90));
+        }
     };
 
     element.attr("class", "ui-bioplot-dotplot");

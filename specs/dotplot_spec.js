@@ -94,6 +94,18 @@ describe("dotplot", function() {
         expect(title.attr("dy")).toBe("-1em");
     })
 
+    it("should render axis labels", function() {
+        plot.configure({
+            xlabel: "xlabel",
+            ylabel: "ylabel"
+        });
+
+        plot.render();
+
+        expect(d3.select(".x").text()).toBe("xlabel");
+        expect(d3.select(".y").text()).toBe("ylabel");
+    })
+
     it("should be styled", function() {
         expect(element.attr("class")).toBe("ui-bioplot-dotplot")
     })
