@@ -51,6 +51,13 @@ function dotplot(element, config) {
             .attr("transform", translate(self.config.padding.left,
                     self.config.padding.top));
 
+        self.view = self.viewport.append("g")
+            .attr("transform", translate(5, 5))
+            .append("rect")
+            .attr("width", self.config.size.width)
+            .attr("height", self.config.size.height)
+            .attr("pointer-events", "all");
+
         if (self.config.title) {
             self.viewport.append("text")
                 .attr("class", "axis")
