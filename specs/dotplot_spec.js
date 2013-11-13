@@ -101,6 +101,11 @@ describe("dotplot", function() {
         expect(svg.attr("width")).toBe('760');
         expect(svg.attr("height")).toBe('740');
 
+        var view = svg.select("rect");
+
+        expect(view.attr("width")).toBe('700');
+        expect(view.attr("height")).toBe('700');
+
         expect(true).toBe(true);
     });
 
