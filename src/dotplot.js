@@ -8,6 +8,8 @@ function dotplot(element, config) {
 
     this.configure = function(configuration) {
         this.config = configuration || {};
+        this.config.coordinates = this.config.coordinates || "default";
+
         this.config.size = this.config.size || {
             width: 700,
             height: 700
@@ -18,18 +20,23 @@ function dotplot(element, config) {
             bottom : this.config.xlabel ? 50 : 20,
             left : this.config.ylabel ? 50 : 20
         };
-
         this.config.extent = this.config.extent || {
-            horizontal: [0, this.config.size.width],
-            vertical: [0, this.config.size.height],
+            default: {
+                vertical: [0, this.config.size.width],
+                horizontal: [0, this.config.size.width]
+            }
         };
 
+        if (!this.config.extent.hasOwnProperty(this.config.coordinates)) {
+            throw new Error("An extent does not exist for this coordinate system");
+        }
+
         this.scales.horizontal
-            .domain(this.config.extent.horizontal)
+            .domain(this.config.extent[this.config.coordinates].horizontal)
             .range([0, this.config.size.width]);
 
         this.scales.vertical
-            .domain(this.config.extent.vertical)
+            .domain(this.config.extent[this.config.coordinates].vertical)
             .range([this.config.size.height, 0]);
     };
 

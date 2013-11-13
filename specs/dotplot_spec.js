@@ -24,8 +24,12 @@ describe("Bioplot : dotplot", function() {
         expect(plot.config.xlabel).toBeUndefined();
         expect(plot.config.ylabel).toBeUndefined();
 
-        expect(plot.config.extent.horizontal).toEqual([0, 700]);
-        expect(plot.config.extent.vertical).toEqual([0, 700]);
+        expect(plot.config.extent).toEqual({
+            default: {
+                horizontal: [0, 700],
+                vertical: [0, 700]
+            },
+        });
     });
 
     it("should override default configuration", function() {
@@ -41,12 +45,19 @@ describe("Bioplot : dotplot", function() {
                 right: 10
             },
             extent: {
-                horizontal: [10, 1000],
-                vertical: [20, 2000],
+                gene: {
+                   vertical: [10, 2000],
+                   horizontal: [10, 1000]
+                },
+                nucleotide: {
+                    vertical: [20, 1000],
+                    horizontal: [10, 2000]
+                }
             },
             title: 'title',
             xlabel: 'xlabel',
-            ylabel: 'ylabel'
+            ylabel: 'ylabel',
+            coordinates: 'gene'
         });
 
         expect(plot.config.size.width).toBe(800);
@@ -61,8 +72,24 @@ describe("Bioplot : dotplot", function() {
         expect(plot.config.xlabel).toBe('xlabel');
         expect(plot.config.ylabel).toBe('ylabel');
 
-        expect(plot.config.extent.horizontal).toEqual([10, 1000]);
-        expect(plot.config.extent.vertical).toEqual([20, 2000])
+        expect(plot.config.extent).toEqual({
+            gene: {
+                vertical: [10, 2000],
+                horizontal: [10, 1000]
+            },
+            nucleotide: {
+                vertical: [20, 1000],
+                horizontal: [10, 2000]
+            }
+        })
+    })
+
+    it("should fail to be configured", function() {
+        var error = new Error("An extent does not exist for this coordinate system");
+        var callback = function() {
+            plot.configure({ coordinates : "test" });
+        };
+        expect(callback).toThrow(error);
     })
 
     it("should render an empty dotplot", function() {
