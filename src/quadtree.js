@@ -43,4 +43,17 @@ function quadtree(boundary, level) {
         this.southEast = new quadtree(new rectangle(x2, y, width, height), l);
         this.southWest = new quadtree(new rectangle(x, y, width, height), l);
     };
+
+    this.clear = function() {
+        if (this.northWest !== undefined) this.northWest.clear();
+        if (this.northEast !== undefined) this.northEast.clear();
+        if (this.southWest !== undefined) this.southWest.clear();
+        if (this.southEast !== undefined) this.southEast.clear();
+
+        this.northWest = undefined;
+        this.northEast = undefined;
+        this.southWest = undefined;
+        this.southEast = undefined;
+        this.points.length = 0;
+    };
 }
