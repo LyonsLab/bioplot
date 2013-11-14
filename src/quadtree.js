@@ -28,5 +28,13 @@
         };
     }());
 
+    function Quadtree(boundary, level) {
+        this.capacity = 10;
+        this.level = level || 10;
+        this.boundary = boundary;
+        this.points = [];
+    }
+
     bioplot.Rectangle = Rectangle;
+    bioplot.Quadtree = Quadtree;
 }(window.bioplot || (window.bioplot = {})));

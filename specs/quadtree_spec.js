@@ -1,5 +1,7 @@
 describe("quadtree", function() {
     Rectangle = bioplot.Rectangle;
+    Quadtree = bioplot.Quadtree;
+
     describe("rectangle", function() {
         var w = new Rectangle(5, 5, 5, 5),
             x = new Rectangle(0, 0, 20, 20),
@@ -34,5 +36,20 @@ describe("quadtree", function() {
         it("should not contain the rectangle", function() {
             expect(w.contains(x)).toBe(false);
         })
+    })
+
+    it("should be an empty quadtree", function() {
+        var rect = new Rectangle(1, 1, 2, 2);
+        var q = new Quadtree(rect);
+
+        expect(q.capacity).toBe(10);
+        expect(q.level).toBe(10);
+
+        expect(q.northWest).toBeUndefined();
+        expect(q.northEast).toBeUndefined();
+        expect(q.southWest).toBeUndefined();
+        expect(q.southEast).toBeUndefined();
+        expect(q.points).toEqual([]);
+        expect(q.boundary.toString()).toEqual(rect.toString());
     })
 })
