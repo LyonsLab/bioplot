@@ -28,4 +28,19 @@ function quadtree(boundary, level) {
     this.level = level || 10;
     this.boundary = boundary;
     this.points = [];
+
+    this._split = function() {
+        var width = parseInt(this.boundary.width / 2),
+            height = parseInt(this.boundary.height / 2),
+            l = this.level + 1,
+            x = this.boundary.x,
+            y = this.boundary.y,
+            x2 = x + width,
+            y2 = y + height;
+
+        this.northWest = new quadtree(new rectangle(x, y2, width, height), l);
+        this.northEast = new quadtree(new rectangle(x2, y2, width, height), l);
+        this.southEast = new quadtree(new rectangle(x2, y, width, height), l);
+        this.southWest = new quadtree(new rectangle(x, y, width, height), l);
+    };
 }
