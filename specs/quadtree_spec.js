@@ -34,4 +34,19 @@ describe("quadtree", function() {
             expect(w.contains(x)).toBe(false);
         })
     })
+
+    it("should be an empty quadtree", function() {
+        var rect = new rectangle(1, 1, 2, 2);
+        var q = new quadtree(rect);
+
+        expect(q.capacity).toBe(10);
+        expect(q.level).toBe(10);
+
+        expect(q.northWest).toBeUndefined();
+        expect(q.northEast).toBeUndefined();
+        expect(q.southWest).toBeUndefined();
+        expect(q.southEast).toBeUndefined();
+        expect(q.points).toEqual([]);
+        expect(q.boundary.toString()).toEqual(rect.toString());
+    })
 })

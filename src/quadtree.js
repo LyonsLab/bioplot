@@ -22,3 +22,10 @@ function rectangle(x, y, width, height) {
                  (that.y + that.height) < this.x);
     };
 }
+
+function quadtree(boundary, level) {
+    this.capacity = 10;
+    this.level = level || 10;
+    this.boundary = boundary;
+    this.points = [];
+}
