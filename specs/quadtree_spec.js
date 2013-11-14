@@ -12,6 +12,10 @@ describe("quadtree", function() {
         tree = new Quadtree(new Rectangle(0, 0, 100, 200));
     })
 
+    afterEach(function(){
+        tree.clear();
+    });
+
     describe("rectangle", function() {
         var w = new Rectangle(5, 5, 5, 5),
             x = new Rectangle(0, 0, 20, 20),
@@ -75,5 +79,28 @@ describe("quadtree", function() {
         expect(tree.northEast.boundary.toString()).toBe(ne);
         expect(tree.southWest.boundary.toString()).toBe(sw);
         expect(tree.southEast.boundary.toString()).toBe(se);
+    })
+
+    it("should clear a quadtree", function() {
+        tree.split();
+
+        p1 = tree.points = [1, 2, 3, 4];
+        p2 = tree.northWest.points = [1, 2, 3, 4];
+        p3 = tree.northEast.points = [1, 2, 3, 4];
+        p4 = tree.southWest.points = [1, 2, 3, 4];
+        p5 = tree.southEast.points = [1, 2, 3, 4];
+
+        tree.clear();
+
+        expect(tree.northWest).toBeUndefined();
+        expect(tree.northEast).toBeUndefined();
+        expect(tree.southWest).toBeUndefined();
+        expect(tree.southEast).toBeUndefined();
+
+        expect(p1).toEqual([]);
+        expect(p2).toEqual([]);
+        expect(p3).toEqual([]);
+        expect(p4).toEqual([]);
+        expect(p5).toEqual([]);
     })
 })

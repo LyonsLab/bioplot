@@ -50,6 +50,19 @@
                 this.northEast = new Quadtree(new Rectangle(x2, y2, width, height), l);
                 this.southEast = new Quadtree(new Rectangle(x2, y, width, height), l);
                 this.southWest = new Quadtree(new Rectangle(x, y, width, height), l);
+            },
+
+            clear: function() {
+                if (this.northWest !== undefined) this.northWest.clear();
+                if (this.northEast !== undefined) this.northEast.clear();
+                if (this.southWest !== undefined) this.southWest.clear();
+                if (this.southEast !== undefined) this.southEast.clear();
+
+                this.northWest = undefined;
+                this.northEast = undefined;
+                this.southWest = undefined;
+                this.southEast = undefined;
+                this.points.length = 0;
             }
         };
     }());
