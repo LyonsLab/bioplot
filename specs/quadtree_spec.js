@@ -5,15 +5,20 @@ describe("quadtree", function() {
     var northWest = new Rectangle(0, 100, 50, 100),
         northEast = new Rectangle(50, 100, 50, 100),
         southWest = new Rectangle(0, 0, 50, 100),
-        southEast = new Rectangle(50, 0, 50, 100);
-        tree = new Quadtree(new Rectangle(0, 0, 100, 200))
+        southEast = new Rectangle(50, 0, 50, 100),
+        tree = new Quadtree(new Rectangle(0, 0, 100, 200)),
+        points;
 
     beforeEach(function() {
         tree = new Quadtree(new Rectangle(0, 0, 100, 200));
+        points = d3.range(50).map(function(d) {
+            return {dataType: "point", x: 100 * Math.random(), y: 200 * Math.random()};
+        });
     })
 
     afterEach(function(){
         tree.clear();
+        points.length = 0;
     });
 
     describe("rectangle", function() {
@@ -134,5 +139,43 @@ describe("quadtree", function() {
         expect(p3).toEqual([]);
         expect(p4).toEqual([]);
         expect(p5).toEqual([]);
+    })
+
+    it("should not insert data outside the boundary", function() {
+        var rect = {x: 20, y: 30, width: 10, height: 500},
+            line = {dataType: "line", x1:10, x2:250, y1:20, y2:20},
+            point = {dataType: "point", x: 250, y:250};
+
+        expect(tree.insert(rect)).toBe(false);
+        expect(tree.points.length).toBe(0);
+
+        expect(tree.insert(line)).toBe(false);
+        expect(tree.points.length).toBe(0);
+
+        expect(tree.insert(point)).toBe(false);
+        expect(tree.points.length).toBe(0);
+    })
+
+    it("should insert data inside the boundary", function() {
+        var rect = {x: 20, y: 30, width: 10, height: 10},
+            line = {dataType: "line", x1:20, x2:100, y1:20, y2:20},
+            point = {dataType: "point", x: 20, y:20};
+
+        expect(tree.insert(rect)).toBe(true);
+        expect(tree.points.length).toBe(1);
+
+        expect(tree.insert(line)).toBe(true);
+        expect(tree.points.length).toBe(2);
+
+        expect(tree.insert(point)).toBe(true);
+        expect(tree.points.length).toBe(3);
+    })
+
+    it("should dynamically grow on insert", function() {
+        var res = points.map(function(d) {return tree.insert(d)});
+
+        res.forEach(function(successful) {
+            expect(successful).toBe(true);
+        })
     })
 })

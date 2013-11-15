@@ -78,6 +78,28 @@
                 this.southWest = undefined;
                 this.southEast = undefined;
                 this.points.length = 0;
+            },
+
+            insert: function(data) {
+                if (!this.boundary.contains(data)) return false;
+
+                if (this.points.length < this.capacity) {
+                    this.points.push(data);
+                    return true;
+                }
+
+                if (this.northWest === undefined) {
+                    this.split();
+                }
+
+                if (this.northWest.insert(data)) return true;
+                if (this.northEast.insert(data)) return true;
+                if (this.southWest.insert(data)) return true;
+                if (this.southEast.insert(data)) return true;
+
+                this.points.push(data);
+
+                return true;
             }
         };
     }());
