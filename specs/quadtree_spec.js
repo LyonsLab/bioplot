@@ -29,7 +29,7 @@ describe("quadtree", function() {
 
         var a = {dataType: "line", x1:1, x2:3, y1:10, y2:10},
             b = {dataType: "line", x1:0, x2:0, y1:20, y2:20},
-            c = {dataType: "line", x1:25, x2:25, y1:10, y2:10};
+            c = {dataType: "line", x1:25, x2:40, y1:25, y2:40};
 
         var g = {dataType: "point", x: 10, y: 10},
             h = {dataType: "point", x: 20, y: 20},
@@ -64,6 +64,16 @@ describe("quadtree", function() {
             expect(w.contains(x)).toBe(false);
         })
 
+        it("should intersect the line", function() {
+            expect(x.intersects(a)).toBe(true);
+            expect(x.intersects(b)).toBe(true);
+            expect(z.intersects(c)).toBe(true);
+        })
+
+        it("should not intersect the line", function() {
+            expect(x.intersects(c)).toBe(false);
+        })
+
         it("should contain the points", function() {
             expect(x._containsPoint(g)).toBe(true);
             expect(x._containsPoint(h)).toBe(true);
@@ -84,8 +94,8 @@ describe("quadtree", function() {
         })
 
         it("should not contain the line", function() {
-            expect(x._containsLine(c)).toBe(false);
-            expect(x.contains(c)).toBe(false);
+            expect(z._containsLine(c)).toBe(false);
+            expect(z.contains(c)).toBe(false);
         })
     })
 

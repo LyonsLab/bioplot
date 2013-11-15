@@ -18,7 +18,7 @@
                         (that.y + that.height) <= (this.y + this.height));
             },
 
-            _containsLine:  function(line) {
+            _containsLine: function(line) {
                 return (this._containsPoint({ x: line.x1, y: line.y1})
                         && this._containsPoint({ x: line.x2, y: line.y2}));
             },
@@ -35,10 +35,18 @@
             },
 
             intersects: function(that) {
+                if (that.dataType === "line") return this._intersectsLine(that);
+                if (that.dataType === "point") return this._containsPoint(that);
+
                 return !(that.left > (this.left + this.width) ||
                         (that.left + that.width) < this.left ||
                         that.y > (this.y + this.height) ||
                         (that.y + that.height) < this.x);
+            },
+
+            _intersectsLine: function(line) {
+                return (this._containsPoint({ x: line.x1, y: line.y1})
+                        || this._containsPoint({ x: line.x2, y: line.y2}));
             }
         };
     }());
