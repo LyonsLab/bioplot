@@ -188,4 +188,16 @@ describe("quadtree", function() {
             expect(successful).toBe(true);
         })
     })
+
+    it("should return all points within itself", function() {
+        points.forEach(function(point) { tree.insert(point)});
+        var query = tree.query(tree.boundary);
+        expect(query.length).toBe(points.length);
+    })
+
+    it("should return no points outside its boundary", function() {
+        points.forEach(function(point) { tree.insert(point)});
+        var query = tree.query(new Rectangle(250, 110, 25, 25));
+        expect(query.length).toBe(0);
+    });
 })

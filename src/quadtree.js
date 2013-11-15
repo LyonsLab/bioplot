@@ -108,6 +108,24 @@
                 this.points.push(data);
 
                 return true;
+            },
+
+            query: function(boundingBox) {
+                var points = [];
+                if (!this.boundary.intersects(boundingBox)) return points;
+
+                this.points.forEach(function(point) {
+                    if (boundingBox.intersects(point)) points.push(point);
+                });
+
+                if (this.northWest === undefined) return points;
+
+                points = points.concat(this.northWest.query(boundingBox));
+                points = points.concat(this.northEast.query(boundingBox));
+                points = points.concat(this.southWest.query(boundingBox));
+                points = points.concat(this.southEast.query(boundingBox));
+
+                return points;
             }
         };
     }());
