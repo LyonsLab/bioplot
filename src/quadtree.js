@@ -5,10 +5,25 @@ function rectangle(x, y, width, height) {
     this.height = height;
 
     this.contains = function(that) {
+        if (that.dataType === "line") return this._containsLine(that);
+        if (that.dataType === "point") return this._containsPoint(that);
+
         return (that.x >= this.x &&
                 that.y >= this.y &&
                 (that.x + that.width) <= (this.x + this.width) &&
                 (that.y + that.height) <= (this.y + this.height));
+    };
+
+    this._containsLine = function(line) {
+        return (this._containsPoint({ x: line.x1, y: line.y1})
+                && this._containsPoint({ x: line.x2, y: line.y2}));
+    };
+
+    this._containsPoint = function(point) {
+        return (point.x >= this.x &&
+                point.y >= this.y &&
+                point.x <= (this.x + this.width) &&
+                point.y <= (this.y + this.height));
     };
 
     this.toString = function() {
