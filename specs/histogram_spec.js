@@ -28,4 +28,12 @@ describe("histogram", function() {
         expect(hist.config.size).toEqual({width: 500, height: 500});
         expect(hist.config.bins).toBe(100);
     })
+
+    it("should be rendered", function() {
+        hist.render();
+
+        var svg = element.select("svg");
+        expect(svg.attr("width")).toBe("700")
+        expect(svg.attr("height")).toBe("700")
+    })
 });
