@@ -23,5 +23,16 @@ function histogram(element, config) {
         return self;
     };
 
+    this.load = function(data) {
+        self.scales.horizontal.domain([0, d3.max(data)])
+            .range([0, self.config.size.width - 20]);
+
+        self.bins = d3.layout.histogram()
+            .bins(self.scales.horizontal.ticks(self.config.bins))(data);
+
+        self.scales.vertical.domain([0, d3.max(self.bins, function(bin) { return bin.y; })])
+            .range([self.config.size.height - 20, 20]);
+    };
+
     this.configure(config);
 }
