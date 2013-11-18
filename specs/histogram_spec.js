@@ -1,10 +1,12 @@
 describe("histogram", function() {
     var element,
-        hist;
+        hist,
+        points;
 
     beforeEach(function() {
         element = d3.select(document.body).append('div');
         hist = new histogram(element.node());
+        points = d3.range(100).map(d3.random.irwinHall(2));
     })
 
     afterEach(function() {
@@ -35,5 +37,12 @@ describe("histogram", function() {
         var svg = element.select("svg");
         expect(svg.attr("width")).toBe("700")
         expect(svg.attr("height")).toBe("700")
+    })
+
+    it("should load data", function() {
+        hist.load(points);
+
+        var count = hist.bins.reduce(function(a, b) { return a + b.length; }, 0);
+        expect(count).toBe(points.length);
     })
 });
