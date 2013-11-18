@@ -15,5 +15,13 @@ function histogram(element, config) {
         this.config.bins = this.config.bins || 50;
     };
 
+    this.render = function() {
+        this.plot = d3.select(element).append("svg")
+                    .attr("width", self.config.size.width)
+                    .attr("height", self.config.size.height);
+
+        return self;
+    };
+
     this.configure(config);
 }
