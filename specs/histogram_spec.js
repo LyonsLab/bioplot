@@ -32,11 +32,18 @@ describe("histogram", function() {
     })
 
     it("should be rendered", function() {
-        hist.render();
+       hist.render();
 
-        var svg = element.select("svg");
-        expect(svg.attr("width")).toBe("700")
-        expect(svg.attr("height")).toBe("700")
+       var svg = d3.select("svg");
+       expect(svg.attr("width")).toBe("700")
+       expect(svg.attr("height")).toBe("700")
+    })
+
+    it("should have rect bins", function() {
+        hist.render();
+        hist.load(points).redraw();
+
+        expect(d3.selectAll("rect")[0].length).toBe(hist.bins.length);
     })
 
     it("should load data", function() {
