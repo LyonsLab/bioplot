@@ -41,13 +41,13 @@ describe("histogram", function() {
 
     it("should have rect bins", function() {
         hist.render();
-        hist.load(points).redraw();
+        hist.bin(points).redraw();
 
         expect(d3.selectAll("g.bins > rect")[0].length).toBe(hist.bins.length);
     })
 
-    it("should load data", function() {
-        hist.load(points);
+    it("should bin the data", function() {
+        hist.bin(points);
 
         var count = hist.bins.reduce(function(a, b) { return a + b.length; }, 0);
         expect(count).toBe(points.length);
@@ -57,7 +57,7 @@ describe("histogram", function() {
         var done = false,
             selection = [];
 
-        hist.render().load(points).on('selection', function(s) {
+        hist.render().bin(points).on('selection', function(s) {
            selection = s;
            done = true;
         }).redraw();
