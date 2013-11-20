@@ -35,8 +35,8 @@ describe("histogram", function() {
        hist.render();
 
        var svg = d3.select("svg");
-       expect(svg.attr("width")).toBe("700")
-       expect(svg.attr("height")).toBe("700")
+       expect(svg.attr("width")).toBe("720")
+       expect(svg.attr("height")).toBe("720")
     })
 
     it("should have rect bins", function() {
