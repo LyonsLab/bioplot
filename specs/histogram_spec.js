@@ -43,7 +43,7 @@ describe("histogram", function() {
         hist.render();
         hist.load(points).redraw();
 
-        expect(d3.selectAll("rect")[0].length).toBe(hist.bins.length);
+        expect(d3.selectAll("g.bins > rect")[0].length).toBe(hist.bins.length);
     })
 
     it("should load data", function() {
