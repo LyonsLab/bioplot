@@ -19,9 +19,11 @@ function histogram(element, config) {
     };
 
     this.render = function() {
-        self.plot = d3.select(element).append("svg")
+        self.svg = d3.select(element).append("svg")
                     .attr("width", self.config.size.width)
                     .attr("height", self.config.size.height);
+
+        self.plot = self.svg.append("g").attr("class", "bins");
 
         return self;
     };
@@ -32,7 +34,8 @@ function histogram(element, config) {
         var xScale = self.scales.horizontal,
             yScale = self.scales.vertical;
 
-        var bars = self.plot.selectAll("rect").data(self.bins);
+        var bars = self.plot.selectAll("rect")
+            .data(self.bins);
 
         bars.enter().append("rect");
 
