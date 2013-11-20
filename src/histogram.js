@@ -62,7 +62,7 @@ function histogram(element, config) {
             .selectAll("rect").attr("height", self.config.size.height);
     };
 
-    this.load = function(data) {
+    this.bin = function(data) {
         self.scales.horizontal.domain([0, d3.max(data)])
             .range([0, self.config.size.width - 20]);
 
