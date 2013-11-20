@@ -7,6 +7,9 @@ function histogram(element, config) {
     };
     this.bins = [];
 
+    var dispatch = d3.dispatch("selection");
+    d3.rebind(this, dispatch, "on");
+
     this.configure = function (configuration) {
         this.config = configuration || {};
         this.config.size = this.config.size || {
@@ -24,6 +27,9 @@ function histogram(element, config) {
                     .attr("height", self.config.size.height);
 
         self.plot = self.svg.append("g").attr("class", "bins");
+        self.brush = d3.svg.brush();
+        self.selected = self.svg.append("g")
+            .attr("class", "brush");
 
         return self;
     };
@@ -46,6 +52,14 @@ function histogram(element, config) {
             .attr("height", function(d) { return yScale.range()[0] - yScale(d.y); });
 
         bars.exit().remove();
+
+        self.brush.clear()
+            .x(xScale)
+            .on("brush", self._onSelectionChange(self.brush));
+
+        self.selected
+            .call(self.brush)
+            .selectAll("rect").attr("height", self.config.size.height);
     };
 
     this.load = function(data) {
@@ -59,6 +73,17 @@ function histogram(element, config) {
             .range([self.config.size.height - 20, 20]);
 
         return self;
+    };
+
+    this._onSelectionChange = function(brush) {
+        return function() {
+            var extent = brush.extent();
+            var filtered = self.bins.filter(function(bin) {
+                return bin.x <= extent[1] && bin.x >= extent[0];
+            });
+
+            dispatch.selection([].concat.apply([], filtered));
+        };
     };
 
     this.configure(config);

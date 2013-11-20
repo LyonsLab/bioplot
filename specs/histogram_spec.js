@@ -52,4 +52,25 @@ describe("histogram", function() {
         var count = hist.bins.reduce(function(a, b) { return a + b.length; }, 0);
         expect(count).toBe(points.length);
     })
+
+    it("should return the selection of points", function() {
+        var done = false,
+            selection = [];
+
+        hist.render().load(points).on('selection', function(s) {
+           selection = s;
+           done = true;
+        }).redraw();
+
+        var brush = d3.svg.brush()
+            .x(hist.scales.horizontal)
+            .extent(hist.scales.horizontal.domain());
+
+        // Simulate brush event
+        hist._onSelectionChange(brush)();
+
+        waitsFor(function() { return done; }, 'brush selection done', 1000);
+
+        expect(selection.sort()).toEqual(points.sort());
+    })
 });
