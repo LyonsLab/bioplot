@@ -44,7 +44,7 @@ function dotplot(element, config) {
         var vwidth = self.config.size.width + self.config.padding.left + self.config.padding.right,
             vheight = self.config.size.height + self.config.padding.top + self.config.padding.bottom;
 
-        self.viewport = self.element.append("svg")
+        self.viewport = d3.select(self.element).append("svg")
             .attr("width",  vwidth)
             .attr("height", vheight)
             .append("g")
@@ -86,6 +86,6 @@ function dotplot(element, config) {
         }
     };
 
-    element.attr("class", "ui-bioplot-dotplot");
+    d3.select(element).attr("class", "ui-bioplot-dotplot");
     this.configure(config);
 }

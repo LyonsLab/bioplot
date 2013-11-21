@@ -95,5 +95,6 @@ function histogram(element, config) {
         };
     };
 
+    d3.select(this.element).attr("class", "ui-bioplot-histogram");
     this.configure(config);
 }

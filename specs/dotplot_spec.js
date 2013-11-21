@@ -4,7 +4,7 @@ describe("dotplot", function() {
 
     beforeEach(function() {
         element = d3.select(document.body).append('div');
-        plot = new dotplot(element, {});
+        plot = new dotplot(element.node(), {});
     })
 
     afterEach(function() {
