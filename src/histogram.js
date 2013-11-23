@@ -3,11 +3,12 @@ function histogram(element, config) {
     this.element = element;
     this.scales = {
         horizontal: d3.scale.linear(),
-        vertical: d3.scale.linear()
+        vertical: d3.scale.linear(),
+        color: d3.scale.linear().interpolate(d3.interpolateHcl)
     };
     this.bins = [];
 
-    var dispatch = d3.dispatch("selection");
+    var dispatch = d3.dispatch("selection", "selectionend");
     d3.rebind(this, dispatch, "on");
 
     this.configure = function (configuration) {
@@ -17,6 +18,9 @@ function histogram(element, config) {
             height: 700
         };
         this.config.bins = this.config.bins || 50;
+
+        var colors = ["#3fc213", "#123243"];
+        this.scales.color.range(colors);
 
         return self;
     };
@@ -46,6 +50,18 @@ function histogram(element, config) {
         var xScale = self.scales.horizontal,
             yScale = self.scales.vertical;
 
+
+        var labels = self.plot.selectAll("text")
+            .data(self.bins);
+
+        labels.enter().append("text");
+
+        labels.transition()
+            .text(function(d) { return d.y ? d.y : ""; })
+            .style("font-size", function(d) { return Math.min(15, parseInt(xScale(d.dx) - 1)); })
+            .attr("text-anchor", "end")
+            .attr("transform", function(d) { return transform(xScale(d.x), yScale(d.y) - 5, 90);});
+
         var bars = self.plot.selectAll("rect")
             .data(self.bins);
 
@@ -54,6 +70,7 @@ function histogram(element, config) {
         bars.transition()
             .attr("x", function(d) { return xScale(d.x); })
             .attr("y", function(d) { return yScale(d.y); })
+            .attr("color", d3.rgb(self.scales.color).toString())
             .attr("width", function(d) { return xScale(d.dx); })
             .attr("height", function(d) { return yScale.range()[0] - yScale(d.y); });
 
@@ -64,18 +81,22 @@ function histogram(element, config) {
 
         self.brush.clear()
             .x(xScale)
-            .on("brush", self._onSelectionChange(self.brush));
+            .on("brush", self._onSelectionChange(self.brush))
+            .on("brushend", self._onSelectionEnd(self.brush));
 
         self.selected
             .call(self.brush)
             .selectAll("rect").attr("height", self.config.size.height - 20);
     };
 
-    this.bin = function(data) {
-        self.scales.horizontal.domain([0, d3.max(data)])
+    this.bin = function(data, func) {
+        self.scales.horizontal.domain([0, d3.max(data, func)])
             .range([0, self.config.size.width - 20]);
 
+        self.scales.color.domain([0, d3.max(data, func)]);
+
         self.bins = d3.layout.histogram()
+            .value(func)
             .bins(self.scales.horizontal.ticks(self.config.bins))(data);
 
         self.scales.vertical.domain([0, d3.max(self.bins, function(bin) { return bin.y; })])
@@ -84,9 +105,16 @@ function histogram(element, config) {
         return self;
     };
 
+    this._onSelectionEnd = function(brush)  {
+        return function() {
+            dispatch.selectionend(brush.empty());
+        };
+    };
+
     this._onSelectionChange = function(brush) {
         return function() {
-            var extent = brush.extent();
+            var extent = brush.empty() ? self.scales.horizontal.domain() : brush.extent();
+
             var filtered = self.bins.filter(function(bin) {
                 return bin.x <= extent[1] && bin.x >= extent[0];
             });
