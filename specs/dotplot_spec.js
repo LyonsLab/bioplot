@@ -138,6 +138,20 @@ describe("dotplot", function() {
         expect(d3.select(".y").text()).toBe("ylabel");
     })
 
+    it("should notify on coordinate system change", function() {
+        var done = false;
+
+        plot.on("coordinates", function() {
+            done = true;
+        });
+
+        plot.coordinates("default");
+
+        waitsFor(function() { return done; }, "The coordinate system did not change", 1000);
+
+        expect(plot.coordinates()).toBe("default");
+    })
+
     it("should be styled", function() {
         expect(element.attr("class")).toBe("ui-bioplot-dotplot")
     })

@@ -1,5 +1,9 @@
 function dotplot(element, config) {
-    var self = this;
+    var self = this,
+        dispatch = d3.dispatch("coordinates");
+
+    d3.rebind(this, dispatch, "on");
+
     this.element = element;
     this.scales = {
         horizontal: d3.scale.linear(),
@@ -8,7 +12,6 @@ function dotplot(element, config) {
 
     this.configure = function(configuration) {
         this.config = configuration || {};
-        this.config.coordinates = this.config.coordinates || "default";
 
         this.config.size = this.config.size || {
             width: 700,
@@ -27,17 +30,7 @@ function dotplot(element, config) {
             }
         };
 
-        if (!this.config.extent.hasOwnProperty(this.config.coordinates)) {
-            throw new Error("An extent does not exist for this coordinate system");
-        }
-
-        this.scales.horizontal
-            .domain(this.config.extent[this.config.coordinates].horizontal)
-            .range([0, this.config.size.width]);
-
-        this.scales.vertical
-            .domain(this.config.extent[this.config.coordinates].vertical)
-            .range([this.config.size.height, 0]);
+        this.coordinates(this.config.coordinates || "default");
     };
 
     this.render = function () {
@@ -84,6 +77,28 @@ function dotplot(element, config) {
                 .style("text-anchor", "middle")
                 .attr("transform", transform(-10, self.config.size.height/2, 90));
         }
+    };
+
+    this.coordinates = function(_) {
+        if(!arguments.length) return this.config.coordinates;
+
+        if (!this.config.extent.hasOwnProperty(_)) {
+            throw new Error("An extent does not exist for this coordinate system");
+        }
+
+        this.config.coordinates = _;
+
+        this.scales.horizontal
+            .domain(this.config.extent[_].horizontal)
+            .range([0, this.config.size.width]);
+
+        this.scales.vertical
+            .domain(this.config.extent[_].vertical)
+            .range([this.config.size.height, 0]);
+
+        dispatch.coordinates(_);
+
+        return this;
     };
 
     d3.select(element).attr("class", "ui-bioplot-dotplot");
