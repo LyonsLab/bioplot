@@ -20,7 +20,8 @@
     "tests"
   ],
   "dependencies": {
-    "d3": "~3.3.6"
+    "d3": "~3.3.6",
+    "underscore": "~1.5.2"
   },
   "devDependencies": {
     "qunit": "~1.12.0"
