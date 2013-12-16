@@ -33,3 +33,12 @@ function rbind(func, object) {
         return func.apply(object, [].concat(_.toArray(arguments), args));
     };
 }
+
+function bound(func, lower, upper, context) {
+    return function() {
+        var result = func.apply(context, arguments);
+        if (isNaN(result)) return NaN;
+
+        return Math.max(lower, Math.min(result, upper));
+    };
+}

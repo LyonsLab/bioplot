@@ -40,4 +40,20 @@ describe("util", function() {
 
         expect(g(1)).toEqual([1, 2, 3, 4]);
     })
+
+    it("should bound the functions output value", function() {
+        var f = function(x) { return x; };
+        var g = bound(f, 0, 100);
+
+        //extremes bounded
+        expect(g(-Infinity)).toBe(0);
+        expect(g(Infinity)).toBe(100);
+
+        //edge case
+        expect(g(100)).toBe(100);
+        expect(g(0)).toBe(0);
+
+        expect(g(50)).toBe(50);
+        expect(isNaN(g(NaN))).toBe(true);
+    });
 })
