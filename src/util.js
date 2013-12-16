@@ -25,3 +25,11 @@ function scan(func, initial, iterable) {
 
     return [].concat([initial], iterable).map(reduce);
 }
+
+function rbind(func, object) {
+    var args = _.rest(arguments, 2);
+
+    return function() {
+        return func.apply(object, [].concat(_.toArray(arguments), args));
+    };
+}

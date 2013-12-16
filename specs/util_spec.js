@@ -33,4 +33,11 @@ describe("util", function() {
         expect(scan(add, 0, points)).toEqual([0, 10, 15, 17, 19, 24])
         expect(scan(divide, 1000, points)).toEqual([1000, 100, 20, 10, 5, 1]);
     })
+
+    it("should be a partial application from the right", function() {
+        var f = function() { return arguments; };
+        var g = rbind(f, null, 2, 3, 4);
+
+        expect(g(1)).toEqual([1, 2, 3, 4]);
+    })
 })
