@@ -49,6 +49,7 @@ module.exports = function(grunt) {
                     port: 9876,
                     files: [
                         {pattern: "bower_components/d3/d3.min.js", watched: false, served: true, included: true},
+                        {pattern: "bower_components/underscore/underscore-min.js", watched: false, served: true, included: true},
                         {pattern: "src/**/*.js", watched: true, served: true, included: true},
                         {pattern: "specs/**/*spec.js", watched: true, served: true, included: true}
                     ],
