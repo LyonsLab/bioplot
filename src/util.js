@@ -2,7 +2,10 @@ var slice = Array.prototype.slice,
     add = function(a, b) { return a + b; },
     mult = function(a, b) { return a * b; },
     sub = function(a, b) { return a  - b; },
-    div = function(a, b) { return a / b; };
+    div = function(a, b) { return a / b; },
+    even = function(a) { return a % 2 === 0; },
+    odd = function(a) { return a % 2 === 1; },
+    midpoint = function (x) { return (x[0] + x[1]) / 2; };
 
 function translate(x, y) {
     return "translate(" + x + "," + y + ")";
