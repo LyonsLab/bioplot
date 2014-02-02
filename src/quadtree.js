@@ -51,6 +51,7 @@ function quadtree(boundary, level) {
     this.level = level || 10;
     this.boundary = boundary;
     this.points = [];
+    var concat = Array.prototype.concat;
 
     this._split = function() {
         var width = parseInt(this.boundary.width / 2),
@@ -112,10 +113,10 @@ function quadtree(boundary, level) {
 
         if (this.northWest === undefined) return points;
 
-        points = points.concat(this.northWest.query(boundingBox));
-        points = points.concat(this.northEast.query(boundingBox));
-        points = points.concat(this.southWest.query(boundingBox));
-        points = points.concat(this.southEast.query(boundingBox));
+        points = concat.call(points, this.northWest.query(boundingBox),
+            this.northEast.query(boundingBox),
+            this.southWest.query(boundingBox),
+            this.southEast.query(boundingBox));
 
         return points;
     };
