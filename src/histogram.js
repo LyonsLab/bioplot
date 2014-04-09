@@ -1,99 +1,110 @@
-function histogram(element, config) {
-    var self = this;
-    this.element = element;
-    this.scales = {
-        horizontal: d3.scale.linear(),
-        vertical: d3.scale.linear()
-    };
-    this.bins = [];
+function histogram(config) {
+    var bins =[],
+        horizontal = d3.scale.linear(),
+        vertical =  d3.scale.linear(),
+        brush = d3.svg.brush(),
+        color = d3.scale.linear(),
+        dispatch = d3.dispatch("selected");
 
-    var dispatch = d3.dispatch("selection");
-    d3.rebind(this, dispatch, "on");
+    d3.rebind(my, dispatch, "on");
 
-    this.configure = function (configuration) {
-        this.config = configuration || {};
-        this.config.size = this.config.size || {
-            width: 700,
-            height: 700
-        };
-        this.config.bins = this.config.bins || 50;
+    function my(element, bins) {
+        var svg,
+            plot,
+            bars,
+            xaxis,
+            extent = d3.extent(bins, function(bin) { return bin.x; });
 
-        return self;
-    };
+        // Add missing delta
+        extent[1] = extent[1] + bins[0].dx;
 
-    this.render = function() {
-        self.svg = d3.select(element).append("svg")
-                    .attr("width", self.config.size.width + 20)
-                    .attr("height", self.config.size.height + 20)
+        horizontal.domain(extent)
+            .range([0, config.size.width - 20]);
+
+        color.domain(extent).range(config.color).interpolate(d3.interpolateHcl);
+
+        vertical.domain([0, d3.max(bins, function(bin) { return bin.y; })])
+            .range([config.size.height - 20, 20]);
+
+        d3.select(element).attr("class", "ui-bioplot-histogram");
+
+        svg = d3.select(element).append("svg")
+                    .attr("width", config.size.width + 20)
+                    .attr("height", config.size.height + 20)
                     .append("g")
                     .attr("transform", translate(20, 20));
 
-        self.plot = self.svg.append("g").attr("class", "bins");
-        self.brush = d3.svg.brush();
-        self.selected = self.svg.append("g")
-            .attr("class", "brush");
+        plot = svg.append("g").attr("class", "bins");
 
-        self.xaxis = self.svg.append("g")
+        brush.clear()
+            .x(horizontal)
+            .on("brush", my.selected);
+
+        svg.append("g")
+            .attr("class", "brush")
+            .call(brush)
+            .selectAll("rect").attr("height", config.size.height - 20);
+
+        xaxis = d3.svg.axis().scale(horizontal).orient("bottom");
+
+        svg.append("g")
             .attr("class", "axis")
-            .attr("transform", translate(0, self.config.size.height - 20));
+            .attr("transform", translate(0, config.size.height - 20))
+            .call(xaxis);
 
-        return self;
+        if (bins.length) {
+            bars = plot.selectAll("rect").data(bins);
+
+            bars.enter().append("rect");
+
+            bars.transition()
+                .attr("x", function(d) { return horizontal(d.x); })
+                .attr("y", function(d) { return vertical(d.y); })
+                .attr("fill", function(d) { return color(d.x); })
+                .attr("width", function(d) { return horizontal(d.x + d.dx) - horizontal(d.dx); })
+                .attr("height", function(d) { return vertical.range()[0] - vertical(d.y); });
+
+            bars.exit().remove();
+        }
+    }
+
+    my.bin = function(data) {
+        horizontal.domain(d3.extent(data))
+            .range([0, config.size.width - 20]);
+
+        bins = d3.layout.histogram()
+            .bins(horizontal.ticks(config.bins))(data);
+
+        return bins;
     };
 
-    this.redraw = function() {
-        if (!self.bins.length) return;
-
-        var xScale = self.scales.horizontal,
-            yScale = self.scales.vertical;
-
-        var bars = self.plot.selectAll("rect")
-            .data(self.bins);
-
-        bars.enter().append("rect");
-
-        bars.transition()
-            .attr("x", function(d) { return xScale(d.x); })
-            .attr("y", function(d) { return yScale(d.y); })
-            .attr("width", function(d) { return xScale(d.dx); })
-            .attr("height", function(d) { return yScale.range()[0] - yScale(d.y); });
-
-        bars.exit().remove();
-
-        var axis = d3.svg.axis().scale(xScale).orient("bottom");
-        self.xaxis.call(axis);
-
-        self.brush.clear()
-            .x(xScale)
-            .on("brush", self._onSelectionChange(self.brush));
-
-        self.selected
-            .call(self.brush)
-            .selectAll("rect").attr("height", self.config.size.height - 20);
-    };
-
-    this.bin = function(data) {
-        self.scales.horizontal.domain([0, d3.max(data)])
-            .range([0, self.config.size.width - 20]);
-
-        self.bins = d3.layout.histogram()
-            .bins(self.scales.horizontal.ticks(self.config.bins))(data);
-
-        self.scales.vertical.domain([0, d3.max(self.bins, function(bin) { return bin.y; })])
-            .range([self.config.size.height - 20, 20]);
-
-        return self;
-    };
-
-    this._onSelectionChange = function(brush) {
-        return function() {
-            var extent = brush.extent();
-            var filtered = self.bins.filter(function(bin) {
-                return bin.x <= extent[1] && bin.x >= extent[0];
-            });
-
-            dispatch.selection([].concat.apply([], filtered));
+    my.configure = function(configuration) {
+        config = configuration || {};
+        config.size = config.size || {
+            width: 700,
+            height: 700
         };
+        config.color = config.color || ["green", "red", "blue"];
+        config.bins = config.bins || 50;
     };
 
-    this.configure(config);
+    my.brush = function() {
+        return brush;
+    };
+
+    my.config = function() {
+        return config;
+    };
+
+    my.selected = function() {
+        var extent = brush.extent();
+        var filtered = bins.filter(function(bin) {
+            return bin.x <= extent[1] && bin.x >= extent[0];
+        });
+
+        dispatch.selected([].concat.apply([], filtered));
+    };
+
+    my.configure(config);
+    return my;
 }
