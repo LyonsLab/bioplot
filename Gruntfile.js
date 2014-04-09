@@ -3,21 +3,31 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
+        files: {
+            js: {
+                all: "src/**/*.js",
+                src: "src/**/*.js",
+                test: "src/tests/**/*.js"
+            },
+            css: {
+                src: "css/**/*.css"
+            }
+        },
         jshint: {
             source: {
-                src: "src/**/*.js",
+                src: "<%=files.js.src%>",
                 options: {
                     jshintrc: "src/.jshintrc",
                 }
             },
             tests: {
-                src: "src/tests/**/*.js",
+                src: "<%=files.js.test%>",
             },
             grunt: {
                 src: "Gruntfile.js"
             },
-            dist: {
-                src: ["<%=concat.dist.dest%>"],
+            files: {
+                src: ["<%=concat.js.dest%>"],
                 options: {
                     jshintrc: "src/.jshintrc",
                 }
@@ -32,15 +42,26 @@ module.exports = function(grunt) {
             }
         },
         concat: {
-            dist: {
-                src: "<%= jshint.source.src %>",
+            js: {
+                src: "<%= files.js.src %>",
                 dest: "dist/<%= pkg.name %>.js"
+            },
+            css: {
+                src: "<%= files.css.src %>",
+                dest: "dist/<%= pkg.name %>.css"
             }
         },
         uglify: {
             dist: {
-                src: "<%= concat.dist.dest %>",
+                src: "<%= concat.js.dest %>",
                 dest: "dist/<%= pkg.name %>.min.js"
+            }
+        },
+        cssmin: {
+            dist: {
+                expand: true,
+                src: "<%= concat.css.dest %>",
+                ext: '.min.css'
             }
         },
         karma: {
@@ -97,13 +118,14 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-uglify");
+    grunt.loadNpmTasks("grunt-contrib-cssmin");
 
     grunt.loadNpmTasks("grunt-karma");
     grunt.loadNpmTasks("grunt-express");
     grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks("grunt-open");
 
-    grunt.registerTask("build", ["jshint", "jsonlint", "concat", "uglify"]);
+    grunt.registerTask("build", ["jshint", "jsonlint", "concat", "uglify", "cssmin"]);
     grunt.registerTask("dev", ["express","open", "watch"]);
-    grunt.registerTask("default", ["concat", "uglify"]);
+    grunt.registerTask("default", ["concat", "uglify", "cssmin"]);
 };
