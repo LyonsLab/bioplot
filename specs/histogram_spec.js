@@ -73,7 +73,7 @@ describe("histogram", function() {
         });
 
         // Simulate brush event
-        hist.selected();
+        hist.selected(bins)();
 
         waitsFor(function() { return done; }, 'brush selection done', 1000);
 

@@ -1,15 +1,15 @@
 function histogram(config) {
-    var bins =[],
-        horizontal = d3.scale.linear(),
-        vertical =  d3.scale.linear(),
-        brush = d3.svg.brush(),
+    var brush = d3.svg.brush(),
         color = d3.scale.linear(),
+        horizontal = d3.scale.linear(),
+        vertical = d3.scale.linear(),
         dispatch = d3.dispatch("selected");
 
     d3.rebind(my, dispatch, "on");
 
     function my(element, bins) {
         var svg,
+            genter,
             plot,
             bars,
             xaxis,
@@ -21,39 +21,46 @@ function histogram(config) {
         horizontal.domain(extent)
             .range([0, config.size.width - 20]);
 
-        color.domain(extent).range(config.color).interpolate(d3.interpolateHcl);
+        color.domain(extent).range(config.colors).interpolate(d3.interpolateHcl);
 
         vertical.domain([0, d3.max(bins, function(bin) { return bin.y; })])
             .range([config.size.height - 20, 20]);
 
-        d3.select(element).attr("class", "ui-bioplot-histogram");
+        svg = d3.select(element)
+            .attr("class", "ui-bioplot-histogram")
+            .selectAll("svg")
+            .data([1]);
 
-        svg = d3.select(element).append("svg")
-                    .attr("width", config.size.width + 20)
-                    .attr("height", config.size.height + 20)
-                    .append("g")
-                    .attr("transform", translate(20, 20));
+        genter = svg.enter()
+            .append("svg")
+            .append("g")
+            .attr("transform", translate(20, 20));
 
-        plot = svg.append("g").attr("class", "bins");
+        svg.attr("width", config.size.width + 20)
+            .attr("height", config.size.height + 20)
+
+        plot = genter.append("g").attr("class", "bins");
 
         brush.clear()
             .x(horizontal)
-            .on("brush", my.selected);
+            .on("brush", my.selected(bins));
 
-        svg.append("g")
-            .attr("class", "brush")
+        genter.append("g").attr("class", "brush");
+
+        svg.select(".brush")
             .call(brush)
             .selectAll("rect").attr("height", config.size.height - 20);
 
         xaxis = d3.svg.axis().scale(horizontal).orient("bottom");
 
-        svg.append("g")
-            .attr("class", "axis")
+        genter.append("g").attr("class", "axis");
+
+        svg.select(".axis")
             .attr("transform", translate(0, config.size.height - 20))
             .call(xaxis);
 
         if (bins.length) {
-            bars = plot.selectAll("rect").data(bins);
+            bars = svg.select(".bins").selectAll("rect").data(bins);
 
             bars.enter().append("rect");
 
@@ -69,13 +76,12 @@ function histogram(config) {
     }
 
     my.bin = function(data) {
-        horizontal.domain(d3.extent(data))
+        var horizontal = d3.scale.linear()
+            .domain(d3.extent(data))
             .range([0, config.size.width - 20]);
 
-        bins = d3.layout.histogram()
+        return d3.layout.histogram()
             .bins(horizontal.ticks(config.bins))(data);
-
-        return bins;
     };
 
     my.configure = function(configuration) {
@@ -84,7 +90,7 @@ function histogram(config) {
             width: 700,
             height: 700
         };
-        config.color = config.color || ["green", "red", "blue"];
+        config.colors = config.colors || ["green", "red", "blue"];
         config.bins = config.bins || 50;
     };
 
@@ -96,15 +102,18 @@ function histogram(config) {
         return config;
     };
 
-    my.selected = function() {
-        var extent = brush.extent();
-        var filtered = bins.filter(function(bin) {
-            return bin.x <= extent[1] && bin.x >= extent[0];
-        });
+    my.selected = function(bins) {
+        return function() {
+            var extent = brush.extent();
+            var filtered = bins.filter(function(bin) {
+                return bin.x <= extent[1] && bin.x >= extent[0];
+            });
 
-        dispatch.selected([].concat.apply([], filtered));
+            dispatch.selected([].concat.apply([], filtered));
+        };
     };
 
     my.configure(config);
+
     return my;
 }
