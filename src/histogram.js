@@ -61,7 +61,7 @@ function histogram(config) {
                 .attr("x", function(d) { return horizontal(d.x); })
                 .attr("y", function(d) { return vertical(d.y); })
                 .attr("fill", function(d) { return color(d.x); })
-                .attr("width", function(d) { return horizontal(d.x + d.dx) - horizontal(d.dx); })
+                .attr("width", function(d) { return horizontal(d.x + d.dx) - horizontal(d.x); })
                 .attr("height", function(d) { return vertical.range()[0] - vertical(d.y); });
 
             bars.exit().remove();
