@@ -37,7 +37,7 @@ function histogram(config) {
             .attr("transform", translate(20, 20));
 
         svg.attr("width", config.size.width + 20)
-            .attr("height", config.size.height + 20)
+            .attr("height", config.size.height + 20);
 
         plot = genter.append("g").attr("class", "bins");
 
@@ -75,13 +75,19 @@ function histogram(config) {
         }
     }
 
-    my.bin = function(data) {
-        var horizontal = d3.scale.linear()
-            .domain(d3.extent(data))
+    my.bin = function(data, accessor) {
+        var layout = d3.layout.histogram();
+            horizontal = d3.scale.linear()
             .range([0, config.size.width - 20]);
 
-        return d3.layout.histogram()
-            .bins(horizontal.ticks(config.bins))(data);
+        if (accessor && typeof accessor === "function") {
+            horizontal.domain(d3.extent(data, accessor));
+            layout.value(accessor);
+        } else {
+            horizontal.domain(d3.extent(data));
+        }
+
+        return layout.bins(horizontal.ticks(config.bins))(data);
     };
 
     my.configure = function(configuration) {
@@ -92,6 +98,10 @@ function histogram(config) {
         };
         config.colors = config.colors || ["green", "red", "blue"];
         config.bins = config.bins || 50;
+    };
+
+    my.color = function() {
+        return color;
     };
 
     my.brush = function() {
