@@ -6,7 +6,7 @@ describe("histogram", function() {
 
     beforeEach(function() {
         element = d3.select(document.body).append('div');
-        hist = histogram();
+        hist = bioplot.histogram();
         points = d3.range(100).map(d3.random.irwinHall(2));
         bins = hist.bin(points);
     })
