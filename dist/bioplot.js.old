@@ -1,0 +1,358 @@
+function dotplot(element, config) {
+    var self = this;
+    this.element = element;
+    this.scales = {
+        horizontal: d3.scale.linear(),
+        vertical: d3.scale.linear()
+    };
+
+    this.configure = function(configuration) {
+        this.config = configuration || {};
+        this.config.coordinates = this.config.coordinates || "default";
+
+        this.config.size = this.config.size || {
+            width: 700,
+            height: 700
+        };
+        this.config.padding = this.config.padding || {
+            top : this.config.title ? 40 : 20,
+            right : 40,
+            bottom : this.config.xlabel ? 50 : 20,
+            left : this.config.ylabel ? 50 : 20
+        };
+        this.config.extent = this.config.extent || {
+            default: {
+                vertical: [0, this.config.size.width],
+                horizontal: [0, this.config.size.width]
+            }
+        };
+
+        if (!this.config.extent.hasOwnProperty(this.config.coordinates)) {
+            throw new Error("An extent does not exist for this coordinate system");
+        }
+
+        this.scales.horizontal
+            .domain(this.config.extent[this.config.coordinates].horizontal)
+            .range([0, this.config.size.width]);
+
+        this.scales.vertical
+            .domain(this.config.extent[this.config.coordinates].vertical)
+            .range([this.config.size.height, 0]);
+    };
+
+    this.render = function () {
+        var vwidth = self.config.size.width + self.config.padding.left + self.config.padding.right,
+            vheight = self.config.size.height + self.config.padding.top + self.config.padding.bottom;
+
+        self.viewport = self.element.append("svg")
+            .attr("width",  vwidth)
+            .attr("height", vheight)
+            .append("g")
+            .attr("transform", translate(self.config.padding.left,
+                    self.config.padding.top));
+
+        self.view = self.viewport.append("g")
+            .attr("transform", translate(5, 5))
+            .append("rect")
+            .attr("width", self.config.size.width)
+            .attr("height", self.config.size.height)
+            .attr("pointer-events", "all");
+
+        if (self.config.title) {
+            self.viewport.append("text")
+                .attr("class", "axis")
+                .text(self.config.title)
+                .attr("x", self.config.size.width / 2)
+                .attr("dy", "-1em")
+                .style("text-anchor", "middle");
+        }
+
+        if (self.config.xlabel) {
+            self.viewport.append("text")
+                .attr("class", "axis x")
+                .text(self.config.xlabel)
+                .attr("x", self.config.size.width / 2)
+                .attr("y", self.config.size.height)
+                .attr("dy", "2.5em")
+                .style("text-anchor", "middle");
+        }
+
+        if (self.config.ylabel) {
+            self.viewport.append("text")
+                .attr("class", "axis y")
+                .text(self.config.ylabel)
+                .style("text-anchor", "middle")
+                .attr("transform", transform(-10, self.config.size.height/2, 90));
+        }
+    };
+
+    element.attr("class", "ui-bioplot-dotplot");
+    this.configure(config);
+}
+
+var bioplot = window.bioplot || (window.bioplot  = {});
+
+var histogram = bioplot.histogram function(config) {
+    var brush = d3.svg.brush(),
+        color = d3.scale.linear(),
+        horizontal = d3.scale.linear(),
+        vertical = d3.scale.linear(),
+        dispatch = d3.dispatch("selected");
+
+    d3.rebind(my, dispatch, "on");
+
+    function my(element, bins) {
+        var svg,
+            genter,
+            plot,
+            bars,
+            xaxis,
+            extent = d3.extent(bins, function(bin) { return bin.x; });
+
+        // Add missing delta
+        extent[1] = extent[1] + bins[0].dx;
+
+        horizontal.domain(extent)
+            .range([0, config.size.width - 20]);
+
+        color.domain(extent).range(config.colors).interpolate(d3.interpolateHcl);
+
+        vertical.domain([0, d3.max(bins, function(bin) { return bin.y; })])
+            .range([config.size.height - 20, 20]);
+
+        svg = d3.select(element)
+            .attr("class", "ui-bioplot-histogram")
+            .selectAll("svg")
+            .data([1]);
+
+        genter = svg.enter()
+            .append("svg")
+            .append("g")
+            .attr("transform", translate(20, 20));
+
+        svg.attr("width", config.size.width + 20)
+            .attr("height", config.size.height + 20);
+
+        plot = genter.append("g").attr("class", "bins");
+
+        brush.clear()
+            .x(horizontal)
+            .on("brush", my.selected(bins));
+
+        genter.append("g").attr("class", "brush");
+
+        svg.select(".brush")
+            .call(brush)
+            .selectAll("rect").attr("height", config.size.height - 20);
+
+        xaxis = d3.svg.axis().scale(horizontal).orient("bottom");
+
+        genter.append("g").attr("class", "axis");
+
+        svg.select(".axis")
+            .attr("transform", translate(0, config.size.height - 20))
+            .call(xaxis);
+
+        if (bins.length) {
+            bars = svg.select(".bins").selectAll("rect").data(bins);
+
+            bars.enter().append("rect");
+
+            bars.transition()
+                .attr("x", function(d) { return horizontal(d.x); })
+                .attr("y", function(d) { return vertical(d.y); })
+                .attr("fill", function(d) { return color(d.x); })
+                .attr("width", function(d) { return horizontal(d.x + d.dx) - horizontal(d.x); })
+                .attr("height", function(d) { return vertical.range()[0] - vertical(d.y); });
+
+            bars.exit().remove();
+        }
+    }
+
+    my.bin = function(data, accessor) {
+        var layout = d3.layout.histogram();
+            horizontal = d3.scale.linear()
+            .range([0, config.size.width - 20]);
+
+        if (accessor && typeof accessor === "function") {
+            horizontal.domain(d3.extent(data, accessor));
+            layout.value(accessor);
+        } else {
+            horizontal.domain(d3.extent(data));
+        }
+
+        return layout.bins(horizontal.ticks(config.bins))(data);
+    };
+
+    my.configure = function(configuration) {
+        config = configuration || {};
+        config.size = config.size || {
+            width: 700,
+            height: 700
+        };
+        config.colors = config.colors || ["green", "red", "blue"];
+        config.bins = config.bins || 50;
+    };
+
+    my.color = function() {
+        return color;
+    };
+
+    my.brush = function() {
+        return brush;
+    };
+
+    my.config = function() {
+        return config;
+    };
+
+    my.selected = function(bins) {
+        return function() {
+            var extent = brush.extent();
+            var filtered = bins.filter(function(bin) {
+                return bin.x <= extent[1] && bin.x >= extent[0];
+            });
+
+            dispatch.selected([].concat.apply([], filtered));
+        };
+    };
+
+    my.configure(config);
+
+    return my;
+};
+
+function rectangle(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+
+    this.contains = function(that) {
+        if (that.dataType === "line") return this._containsLine(that);
+        if (that.dataType === "point") return this._containsPoint(that);
+
+        return (that.x >= this.x &&
+                that.y >= this.y &&
+                (that.x + that.width) <= (this.x + this.width) &&
+                (that.y + that.height) <= (this.y + this.height));
+    };
+
+    this._containsLine = function(line) {
+        return (this._containsPoint({ x: line.x1, y: line.y1})
+                && this._containsPoint({ x: line.x2, y: line.y2}));
+    };
+
+    this._containsPoint = function(point) {
+        return (point.x >= this.x &&
+                point.y >= this.y &&
+                point.x <= (this.x + this.width) &&
+                point.y <= (this.y + this.height));
+    };
+
+    this.toString = function() {
+        return "[x=" + this.x  + ", y=" + this.y + ", width=" + this.width + ", height=" + this.height + "]";
+    };
+
+    this.intersects = function(that) {
+        if (that.dataType === "line") return this._intersectsLine(that);
+        if (that.dataType === "point") return this._containsPoint(that);
+
+        return !(that.left > (this.left + this.width) ||
+                 (that.left + that.width) < this.left ||
+                 that.y > (this.y + this.height) ||
+                 (that.y + that.height) < this.x);
+    };
+
+    this._intersectsLine = function(line) {
+        return (this._containsPoint({ x: line.x1, y: line.y1})
+                || this._containsPoint({ x: line.x2, y: line.y2}));
+    };
+}
+
+function quadtree(boundary, level) {
+    this.capacity = 10;
+    this.level = level || 10;
+    this.boundary = boundary;
+    this.points = [];
+
+    this._split = function() {
+        var width = parseInt(this.boundary.width / 2),
+            height = parseInt(this.boundary.height / 2),
+            l = this.level + 1,
+            x = this.boundary.x,
+            y = this.boundary.y,
+            x2 = x + width,
+            y2 = y + height;
+
+        this.northWest = new quadtree(new rectangle(x, y2, width, height), l);
+        this.northEast = new quadtree(new rectangle(x2, y2, width, height), l);
+        this.southEast = new quadtree(new rectangle(x2, y, width, height), l);
+        this.southWest = new quadtree(new rectangle(x, y, width, height), l);
+    };
+
+    this.clear = function() {
+        if (this.northWest !== undefined) this.northWest.clear();
+        if (this.northEast !== undefined) this.northEast.clear();
+        if (this.southWest !== undefined) this.southWest.clear();
+        if (this.southEast !== undefined) this.southEast.clear();
+
+        this.northWest = undefined;
+        this.northEast = undefined;
+        this.southWest = undefined;
+        this.southEast = undefined;
+        this.points.length = 0;
+    };
+
+    this.insert = function(data) {
+        if (!this.boundary.contains(data)) return false;
+
+        if (this.points.length < this.capacity) {
+            this.points.push(data);
+            return true;
+        }
+
+        if (this.northWest === undefined) {
+            this._split();
+        }
+
+        if (this.northWest.insert(data)) return true;
+        if (this.northEast.insert(data)) return true;
+        if (this.southWest.insert(data)) return true;
+        if (this.southEast.insert(data)) return true;
+
+        this.points.push(data);
+
+        return true;
+    };
+
+    this.query = function(boundingBox) {
+        var points = [];
+        if (!this.boundary.intersects(boundingBox)) return points;
+
+        this.points.forEach(function(point) {
+            if (boundingBox.intersects(point)) points.push(point);
+        });
+
+        if (this.northWest === undefined) return points;
+
+        points = points.concat(this.northWest.query(boundingBox));
+        points = points.concat(this.northEast.query(boundingBox));
+        points = points.concat(this.southWest.query(boundingBox));
+        points = points.concat(this.southEast.query(boundingBox));
+
+        return points;
+    };
+}
+
+function translate(x, y) {
+    return "translate(" + x + "," + y + ")";
+}
+
+function rotate(rotation) {
+    return "rotate(" + rotation + ")";
+}
+
+function transform(x, y, rotation) {
+    return translate(x,y) + rotate(rotation);
+}

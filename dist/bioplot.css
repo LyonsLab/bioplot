@@ -1,0 +1,11 @@
+.ui-bioplot-histogram .brush {
+    fill: #333;
+    opacity: 0.5;
+}
+
+.ui-bioplot-histogram .axis path,
+.ui-bioplot-histogram .axis line {
+    stroke: black;
+    shape-rendering: crispEdges;
+    fill: none;
+}
