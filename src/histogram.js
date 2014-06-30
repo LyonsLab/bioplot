@@ -25,7 +25,7 @@
                 .range([config.size.height - 20, 20]);
 
             svg = d3.select(element)
-                .attr("class", "ui-bioplot-histogram")
+                .classed("ui-bioplot-histogram", true)
                 .selectAll("svg")
                 .data([1]);
 
@@ -96,6 +96,19 @@
             };
             config.colors = config.colors || ["green", "red", "blue"];
             config.bins = config.bins || 50;
+        };
+
+        my.setBins = function(bins) {
+            config.bins = bins;
+        };
+
+        my.setColors = function(colors) {
+            config.colors = colors;
+        };
+
+        my.setSize = function(width, height) {
+            config.size.width = width;
+            config.size.height = height;
         };
 
         my.color = function() {
