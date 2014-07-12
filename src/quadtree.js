@@ -1,4 +1,6 @@
 (function(bioplot) {
+    var concat = Array.prototype.concat;
+
     function Rectangle(x, y, width, height) {
         this.x = x;
         this.y = y;
@@ -120,12 +122,11 @@
 
                 if (this.northWest === undefined) return points;
 
-                points = points.concat(this.northWest.query(boundingBox));
-                points = points.concat(this.northEast.query(boundingBox));
-                points = points.concat(this.southWest.query(boundingBox));
-                points = points.concat(this.southEast.query(boundingBox));
-
-                return points;
+                return concat.call(points,
+                    this.northWest.query(boundingBox),
+                    this.northEast.query(boundingBox),
+                    this.southWest.query(boundingBox),
+                    this.southEast.query(boundingBox));
             }
         };
     }());
