@@ -2,7 +2,7 @@
   "name": "bioplot",
   "description": "Bioinformatic plots",
   "author": "Evan Briones",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "keywords": [
     "bioinformatic",
