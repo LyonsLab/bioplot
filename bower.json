@@ -21,8 +21,5 @@
   ],
   "dependencies": {
     "d3": "~3.4.9"
-  },
-  "devDependencies": {
-    "qunit": "~1.12.0"
   }
 }
